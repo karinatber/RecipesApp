@@ -1,14 +1,12 @@
 
 package com.android.project3.recipesapp.data;
 
-import javax.annotation.Generated;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.os.Parcelable.Creator;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-@Generated("org.jsonschema2pojo")
 public class Step implements Parcelable
 {
 

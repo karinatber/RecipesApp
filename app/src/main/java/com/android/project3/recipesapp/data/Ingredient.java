@@ -1,20 +1,18 @@
 
 package com.android.project3.recipesapp.data;
 
-import javax.annotation.Generated;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.os.Parcelable.Creator;
+
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-@Generated("org.jsonschema2pojo")
 public class Ingredient implements Parcelable
 {
 
     @SerializedName("quantity")
     @Expose
-    private int quantity;
+    private float quantity;
     @SerializedName("measure")
     @Expose
     private String measure;
@@ -29,7 +27,7 @@ public class Ingredient implements Parcelable
         })
         public Ingredient createFromParcel(Parcel in) {
             Ingredient instance = new Ingredient();
-            instance.quantity = ((int) in.readValue((int.class.getClassLoader())));
+            instance.quantity = ((float) in.readValue((float.class.getClassLoader())));
             instance.measure = ((String) in.readValue((String.class.getClassLoader())));
             instance.ingredient = ((String) in.readValue((String.class.getClassLoader())));
             return instance;
@@ -47,7 +45,7 @@ public class Ingredient implements Parcelable
      * @return
      *     The quantity
      */
-    public int getQuantity() {
+    public float getQuantity() {
         return quantity;
     }
 
@@ -56,7 +54,7 @@ public class Ingredient implements Parcelable
      * @param quantity
      *     The quantity
      */
-    public void setQuantity(int quantity) {
+    public void setQuantity(float quantity) {
         this.quantity = quantity;
     }
 
