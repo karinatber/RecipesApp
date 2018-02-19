@@ -29,9 +29,10 @@ public class BaseService {
 
     OnApiServiceListener listener;
 
-    public BaseService(Context context){
-        listener = (OnApiServiceListener)context;
+    public BaseService(OnApiServiceListener listener){
+        this.listener = listener;
     }
+
     public interface OnApiServiceListener{
         void onExecFinished(List<Recipe> recipes);
     }
