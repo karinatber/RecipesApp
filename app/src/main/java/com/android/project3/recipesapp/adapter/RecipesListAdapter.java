@@ -27,7 +27,7 @@ public class RecipesListAdapter extends RecyclerView.Adapter<RecipesListAdapter.
     }
 
     public interface OnRecipeClickListener{
-        void onRecipeClick(Recipe recipe);
+        void onRecipeClick(Recipe recipe, int position);
     }
 
     @Override
@@ -68,13 +68,14 @@ public class RecipesListAdapter extends RecyclerView.Adapter<RecipesListAdapter.
             super(itemView);
             mContext = itemView.getContext();
             mRecipeName = (TextView)itemView.findViewById(R.id.tv_recipe_item_name);
+            itemView.setOnClickListener(this);
         }
 
         @Override
         public void onClick(View view) {
             int adapterPosition = getAdapterPosition();
             Recipe recipe = mRecipesList.get(adapterPosition);
-            mOnRecipeClickListener.onRecipeClick(recipe);
+            mOnRecipeClickListener.onRecipeClick(recipe, adapterPosition);
         }
     }
 

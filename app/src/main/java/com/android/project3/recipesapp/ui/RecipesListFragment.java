@@ -1,10 +1,12 @@
 package com.android.project3.recipesapp.ui;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,12 +25,30 @@ import java.util.List;
 
 public class RecipesListFragment extends Fragment implements RecipesListAdapter.OnRecipeClickListener, BaseService.OnApiServiceListener{
     public static final String TAG = RecipesListFragment.class.getSimpleName();
+
     RecyclerView mRecyclerView;
     List<Recipe> mRecipeList;
-
     RecipesListAdapter mAdapter;
 
+    OnSelectRecipeInterface mOnSelectRecipeInterface;
+
     public RecipesListFragment(){
+    }
+
+
+    public interface OnSelectRecipeInterface{
+        void onRecipeSelected(int position, List<Recipe> recipes);
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+
+        try{
+            mOnSelectRecipeInterface = (OnSelectRecipeInterface)context;
+        } catch (ClassCastException e){
+            Log.e(TAG, "Must implement OnSelectRecipeInterface.");
+        }
     }
 
     @Nullable
@@ -53,10 +73,9 @@ public class RecipesListFragment extends Fragment implements RecipesListAdapter.
         service.executeService();
     }
 
-
     @Override
-    public void onRecipeClick(Recipe recipe) {
-        Toast.makeText(this.getContext(), "Recipe: "+recipe.getName(), Toast.LENGTH_LONG).show();
+    public void onRecipeClick(Recipe recipe, int position) {
+        mOnSelectRecipeInterface.onRecipeSelected(position, mRecipeList);
     }
 
     @Override
