@@ -1,5 +1,6 @@
 package com.android.project3.recipesapp.ui;
 
+import android.content.Intent;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -32,10 +33,8 @@ public class MainActivity extends AppCompatActivity implements RecipesListFragme
     @Override
     public void onRecipeSelected(int position, List<Recipe> recipes) {
         mMainRecipeList = recipes;
-        Toast.makeText(this, "Recipe selected: "+recipes.get(position).getName(), Toast.LENGTH_SHORT).show();
-    }
-
-    public void handleTransition(int event){
-
+        Intent intent = new Intent(this, RecipeDetailActivity.class);
+        intent.putExtra(DetailsFragment.EXTRA_RECIPE, recipes.get(position));
+        startActivity(intent);
     }
 }

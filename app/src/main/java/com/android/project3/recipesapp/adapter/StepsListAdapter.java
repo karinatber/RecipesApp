@@ -19,9 +19,14 @@ import java.util.List;
 public class StepsListAdapter extends RecyclerView.Adapter<StepsListAdapter.StepsListViewHolder> {
     static final String TAG = StepsListAdapter.class.getSimpleName();
     List<Step> mStepsList;
+    OnStepClickListener mOnStepClickListener;
 
-    public StepsListAdapter(){
+    public StepsListAdapter(OnStepClickListener onStepClickListener){
+        mOnStepClickListener = onStepClickListener;
+    }
 
+    public interface OnStepClickListener{
+        void onStepClick(Step step);
     }
 
     @Override
@@ -53,15 +58,25 @@ public class StepsListAdapter extends RecyclerView.Adapter<StepsListAdapter.Step
 
     public void setStepsList(List<Step> steps){
         mStepsList = steps;
+        notifyDataSetChanged();
     }
 
-    class StepsListViewHolder extends RecyclerView.ViewHolder{
+    class StepsListViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
         TextView mShortDescr;
 
         public StepsListViewHolder(View itemView) {
             super(itemView);
 
+            itemView.setOnClickListener(this);
             mShortDescr = (TextView)itemView.findViewById(R.id.tv_step_short_description);
+
+        }
+
+        @Override
+        public void onClick(View view) {
+            int position = getAdapterPosition();
+            Step step = mStepsList.get(position);
+            mOnStepClickListener.onStepClick(step);
         }
     }
 }

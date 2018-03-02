@@ -58,6 +58,7 @@ public class IngredientsListAdapter extends RecyclerView.Adapter<IngredientsList
 
     public void setIngredientsList(List<Ingredient> ingredients){
         mIngredientsList = ingredients;
+        notifyDataSetChanged();
     }
 
     class IngredientsListViewHolder extends RecyclerView.ViewHolder{
