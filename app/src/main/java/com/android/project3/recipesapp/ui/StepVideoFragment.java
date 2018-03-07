@@ -7,7 +7,9 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.project3.recipesapp.R;
 import com.android.project3.recipesapp.data.Step;
@@ -24,16 +26,21 @@ import com.google.android.exoplayer2.ui.SimpleExoPlayerView;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
 
+import java.util.List;
+
 
 /**
  * Created by katanbern on 28/02/2018.
  */
 
-public class StepVideoFragment extends Fragment {
+public class StepVideoFragment extends Fragment implements View.OnClickListener{
     TextView mStepFullDescr;
     SimpleExoPlayerView mExoPlayerView;
     SimpleExoPlayer mExoPlayer;
+    Button mBtnPrevious;
+    Button mBtnNext;
     Step mStep;
+    List<Step> mStepList;
 
     public StepVideoFragment(){
 
@@ -46,6 +53,11 @@ public class StepVideoFragment extends Fragment {
 
         mStepFullDescr = (TextView)rootView.findViewById(R.id.tv_step_full_description);
         mExoPlayerView = (SimpleExoPlayerView)rootView.findViewById(R.id.player_view);
+        mBtnPrevious = (Button)rootView.findViewById(R.id.btn_previous_step);
+        mBtnNext = (Button)rootView.findViewById(R.id.btn_next_step);
+
+        mBtnPrevious.setOnClickListener(this);
+        mBtnNext.setOnClickListener(this);
 
         if(mStep != null){
             mStepFullDescr.setText(mStep.getDescription());
@@ -58,6 +70,10 @@ public class StepVideoFragment extends Fragment {
 
     public void setStepData(Step step){
         mStep = step;
+    }
+
+    public void setStepList(List<Step> stepList){
+        mStepList = stepList;
     }
 
     private void initializePlayer(String mediaStringUri){
@@ -90,5 +106,18 @@ public class StepVideoFragment extends Fragment {
         mExoPlayer.stop();
         mExoPlayer.release();
         mExoPlayer = null;
+    }
+
+    @Override
+    public void onClick(View view) {
+        int id = view.getId();
+        switch (id){
+            case R.id.btn_previous_step:
+                Toast.makeText(getContext(), "Previous Step", Toast.LENGTH_SHORT).show();
+                break;
+            case R.id.btn_next_step:
+                Toast.makeText(getContext(), "Next Step", Toast.LENGTH_SHORT).show();
+                break;
+        }
     }
 }
