@@ -41,7 +41,7 @@ public class DetailsFragment extends Fragment implements StepsListAdapter.OnStep
     }
 
     public interface OnStepClickedInterface{
-        void onStepChosen(Step step);
+        void onStepChosen(int stepId);
     }
 
     @Override
@@ -97,7 +97,7 @@ public class DetailsFragment extends Fragment implements StepsListAdapter.OnStep
     }
 
     @Override
-    public void onStepClick(Step step) {
+    public void onStepClick(int step) {
         String videoUrl = step.getVideoURL();
         if (videoUrl != null && !videoUrl.isEmpty()) {
             mOnStepClickedInterface.onStepChosen(step);

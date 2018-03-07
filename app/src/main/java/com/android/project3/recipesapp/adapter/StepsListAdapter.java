@@ -26,7 +26,7 @@ public class StepsListAdapter extends RecyclerView.Adapter<StepsListAdapter.Step
     }
 
     public interface OnStepClickListener{
-        void onStepClick(Step step);
+        void onStepClick(int stepId);
     }
 
     @Override
@@ -76,7 +76,7 @@ public class StepsListAdapter extends RecyclerView.Adapter<StepsListAdapter.Step
         public void onClick(View view) {
             int position = getAdapterPosition();
             Step step = mStepsList.get(position);
-            mOnStepClickListener.onStepClick(step);
+            mOnStepClickListener.onStepClick(position);
         }
     }
 }

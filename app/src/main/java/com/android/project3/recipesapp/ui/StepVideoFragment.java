@@ -41,6 +41,7 @@ public class StepVideoFragment extends Fragment implements View.OnClickListener{
     Button mBtnNext;
     Step mStep;
     List<Step> mStepList;
+    int mStepId;
 
     public StepVideoFragment(){
 
@@ -72,8 +73,9 @@ public class StepVideoFragment extends Fragment implements View.OnClickListener{
         mStep = step;
     }
 
-    public void setStepList(List<Step> stepList){
+    public void setStepListAndPosition(List<Step> stepList, int stepId){
         mStepList = stepList;
+        mStepId = stepId;
     }
 
     private void initializePlayer(String mediaStringUri){

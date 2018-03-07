@@ -12,9 +12,12 @@ import com.android.project3.recipesapp.R;
 import com.android.project3.recipesapp.data.Recipe;
 import com.android.project3.recipesapp.data.Step;
 
+import java.util.List;
+
 public class RecipeDetailActivity extends AppCompatActivity implements DetailsFragment.OnStepClickedInterface{
     Recipe mRecipeData;
     int mStatus;
+    int mStepId;
 
     final static int DETAILS_STATUS = 0;
     final static int STEP_STATUS = 1;
@@ -46,8 +49,10 @@ public class RecipeDetailActivity extends AppCompatActivity implements DetailsFr
     }
 
     @Override
-    public void onStepChosen(Step step) {
-        showStepDetails(step);
+    public void onStepChosen(int stepId) {
+        mStepId = stepId;
+        List<Step> stepsList = mRecipeData.getSteps();
+        showStepDetails(stepsList.get(stepId));
     }
 
     private void showStepDetails(Step step){
@@ -55,6 +60,7 @@ public class RecipeDetailActivity extends AppCompatActivity implements DetailsFr
         FragmentManager manager = getSupportFragmentManager();
         StepVideoFragment stepVideoFragment = new StepVideoFragment();
         stepVideoFragment.setStepData(step);
+        stepVideoFragment.setStepListAndPosition(mRecipeData.getSteps(), mStepId);
 
         FrameLayout stepsContainer = (FrameLayout)findViewById(R.id.steps_container);
         TextView mTopTextView = (TextView)findViewById(R.id.tv_top_subtitle);
@@ -101,4 +107,5 @@ public class RecipeDetailActivity extends AppCompatActivity implements DetailsFr
                 break;
         }
     }
+
 }
