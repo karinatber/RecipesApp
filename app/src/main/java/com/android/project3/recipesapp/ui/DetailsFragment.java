@@ -97,10 +97,10 @@ public class DetailsFragment extends Fragment implements StepsListAdapter.OnStep
     }
 
     @Override
-    public void onStepClick(int step) {
-        String videoUrl = step.getVideoURL();
+    public void onStepClick(int stepId) {
+        String videoUrl = mRecipeData.getSteps().get(stepId).getVideoURL();
         if (videoUrl != null && !videoUrl.isEmpty()) {
-            mOnStepClickedInterface.onStepChosen(step);
+            mOnStepClickedInterface.onStepChosen(stepId);
         }
     }
 }

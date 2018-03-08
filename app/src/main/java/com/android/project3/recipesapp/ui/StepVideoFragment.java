@@ -1,9 +1,11 @@
 package com.android.project3.recipesapp.ui;
 
+import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,6 +36,9 @@ import java.util.List;
  */
 
 public class StepVideoFragment extends Fragment implements View.OnClickListener{
+    public static final String TAG = StepVideoFragment.class.getSimpleName();
+    public static final int FIRST_STEP_ID = 0;
+
     TextView mStepFullDescr;
     SimpleExoPlayerView mExoPlayerView;
     SimpleExoPlayer mExoPlayer;
@@ -42,9 +47,24 @@ public class StepVideoFragment extends Fragment implements View.OnClickListener{
     Step mStep;
     List<Step> mStepList;
     int mStepId;
+    SwitchRecipeListener mSwitchRecipeListener;
 
     public StepVideoFragment(){
 
+    }
+
+    public interface SwitchRecipeListener{
+        void onRecipeChange(int position);
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        try{
+            mSwitchRecipeListener = (SwitchRecipeListener)context;
+        } catch (Exception e){
+            Log.e(TAG, "Must implement SwitchRecipeListener.");
+        }
     }
 
     @Nullable
@@ -61,6 +81,13 @@ public class StepVideoFragment extends Fragment implements View.OnClickListener{
         mBtnNext.setOnClickListener(this);
 
         if(mStep != null){
+            if(mStepId == FIRST_STEP_ID){
+                mBtnPrevious.setClickable(false);
+                mBtnNext.setClickable(true);
+            } else if (mStepId == mStepList.size()-1){
+                mBtnPrevious.setClickable(true);
+                mBtnNext.setClickable(false);
+            }
             mStepFullDescr.setText(mStep.getDescription());
             initializePlayer(mStep.getVideoURL());
             return rootView;
@@ -69,13 +96,10 @@ public class StepVideoFragment extends Fragment implements View.OnClickListener{
         return super.onCreateView(inflater, container, savedInstanceState);
     }
 
-    public void setStepData(Step step){
-        mStep = step;
-    }
-
     public void setStepListAndPosition(List<Step> stepList, int stepId){
         mStepList = stepList;
         mStepId = stepId;
+        mStep = mStepList.get(mStepId);
     }
 
     private void initializePlayer(String mediaStringUri){
@@ -105,20 +129,32 @@ public class StepVideoFragment extends Fragment implements View.OnClickListener{
     }
 
     private void releasePlayer() {
-        mExoPlayer.stop();
-        mExoPlayer.release();
-        mExoPlayer = null;
+        if(mExoPlayer != null) {
+            mExoPlayer.stop();
+            mExoPlayer.release();
+            mExoPlayer = null;
+        }
     }
 
     @Override
     public void onClick(View view) {
         int id = view.getId();
+        if(mStepId == FIRST_STEP_ID){
+            mBtnPrevious.setClickable(false);
+            mBtnNext.setClickable(true);
+        } else if (mStepId == mStepList.size()-1){
+            mBtnPrevious.setClickable(true);
+            mBtnNext.setClickable(false);
+        }
+        releasePlayer();
         switch (id){
             case R.id.btn_previous_step:
                 Toast.makeText(getContext(), "Previous Step", Toast.LENGTH_SHORT).show();
+                mSwitchRecipeListener.onRecipeChange(mStepId-1);
                 break;
             case R.id.btn_next_step:
                 Toast.makeText(getContext(), "Next Step", Toast.LENGTH_SHORT).show();
+                mSwitchRecipeListener.onRecipeChange(mStepId+1);
                 break;
         }
     }
