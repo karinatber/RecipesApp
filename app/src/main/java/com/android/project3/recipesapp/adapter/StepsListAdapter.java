@@ -7,7 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.android.project3.recipesapp.R;
+import com.karinatber.project3.recipesapp.R;
 import com.android.project3.recipesapp.data.Step;
 
 import java.util.List;

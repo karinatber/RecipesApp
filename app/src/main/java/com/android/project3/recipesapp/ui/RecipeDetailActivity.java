@@ -1,7 +1,6 @@
 package com.android.project3.recipesapp.ui;
 
 import android.content.Intent;
-import android.os.PersistableBundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -10,7 +9,7 @@ import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
-import com.android.project3.recipesapp.R;
+import com.karinatber.project3.recipesapp.R;
 import com.android.project3.recipesapp.data.Recipe;
 import com.android.project3.recipesapp.data.Step;
 

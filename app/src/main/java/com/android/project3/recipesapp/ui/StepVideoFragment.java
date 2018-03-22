@@ -13,16 +13,22 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.project3.recipesapp.R;
+import com.android.project3.recipesapp.media.MediaPlayer;
+import com.karinatber.project3.recipesapp.R;
 import com.android.project3.recipesapp.data.Step;
 import com.google.android.exoplayer2.DefaultLoadControl;
+import com.google.android.exoplayer2.ExoPlaybackException;
+import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.ExoPlayerFactory;
 import com.google.android.exoplayer2.LoadControl;
 import com.google.android.exoplayer2.SimpleExoPlayer;
+import com.google.android.exoplayer2.Timeline;
 import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory;
 import com.google.android.exoplayer2.source.ExtractorMediaSource;
 import com.google.android.exoplayer2.source.MediaSource;
+import com.google.android.exoplayer2.source.TrackGroupArray;
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
+import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
 import com.google.android.exoplayer2.trackselection.TrackSelector;
 import com.google.android.exoplayer2.ui.SimpleExoPlayerView;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
@@ -35,34 +41,34 @@ import java.util.List;
  * Created by katanbern on 28/02/2018.
  */
 
-public class StepVideoFragment extends Fragment implements View.OnClickListener{
+public class StepVideoFragment extends Fragment implements View.OnClickListener, ExoPlayer.EventListener {
     public static final String TAG = StepVideoFragment.class.getSimpleName();
     public static final int FIRST_STEP_ID = 0;
 
     TextView mStepFullDescr;
     SimpleExoPlayerView mExoPlayerView;
-    SimpleExoPlayer mExoPlayer;
     Button mBtnPrevious;
     Button mBtnNext;
     Step mStep;
     List<Step> mStepList;
     int mStepId;
     SwitchRecipeListener mSwitchRecipeListener;
+    MediaPlayer mMediaPlayer;
 
-    public StepVideoFragment(){
-
+    public StepVideoFragment() {
+        //need empty constructor
     }
 
-    public interface SwitchRecipeListener{
+    public interface SwitchRecipeListener {
         void onRecipeChange(int position);
     }
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        try{
-            mSwitchRecipeListener = (SwitchRecipeListener)context;
-        } catch (Exception e){
+        try {
+            mSwitchRecipeListener = (SwitchRecipeListener) context;
+        } catch (Exception e) {
             Log.e(TAG, "Must implement SwitchRecipeListener.");
         }
     }
@@ -72,23 +78,24 @@ public class StepVideoFragment extends Fragment implements View.OnClickListener{
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.step_video_fragment, container, false);
 
-        mStepFullDescr = (TextView)rootView.findViewById(R.id.tv_step_full_description);
-        mExoPlayerView = (SimpleExoPlayerView)rootView.findViewById(R.id.player_view);
-        mBtnPrevious = (Button)rootView.findViewById(R.id.btn_previous_step);
-        mBtnNext = (Button)rootView.findViewById(R.id.btn_next_step);
+        mStepFullDescr = (TextView) rootView.findViewById(R.id.tv_step_full_description);
+        mExoPlayerView = (SimpleExoPlayerView) rootView.findViewById(R.id.player_view);
+        mBtnPrevious = (Button) rootView.findViewById(R.id.btn_previous_step);
+        mBtnNext = (Button) rootView.findViewById(R.id.btn_next_step);
 
         mBtnPrevious.setOnClickListener(this);
         mBtnNext.setOnClickListener(this);
 
-        if(mStep != null){
-            if(mStepId == FIRST_STEP_ID){
+        if (mStep != null) {
+            if (mStepId == FIRST_STEP_ID) {
                 mBtnPrevious.setClickable(false);
                 mBtnNext.setClickable(true);
-            } else if (mStepId == mStepList.size()-1){
+            } else if (mStepId == mStepList.size() - 1) {
                 mBtnPrevious.setClickable(true);
                 mBtnNext.setClickable(false);
             }
             mStepFullDescr.setText(mStep.getDescription());
+
             initializePlayer(mStep.getVideoURL());
             return rootView;
         }
@@ -96,66 +103,81 @@ public class StepVideoFragment extends Fragment implements View.OnClickListener{
         return super.onCreateView(inflater, container, savedInstanceState);
     }
 
-    public void setStepListAndPosition(List<Step> stepList, int stepId){
+    public void setStepListAndPosition(List<Step> stepList, int stepId) {
         mStepList = stepList;
         mStepId = stepId;
         mStep = mStepList.get(mStepId);
     }
 
-    private void initializePlayer(String mediaStringUri){
+    private void initializePlayer(String mediaStringUri) {
         Uri mediaUri = prepareStepUri(mediaStringUri);
-        if (mExoPlayer == null){
-            /**create an instance of the ExoPlayer**/
-            TrackSelector trackSelector = new DefaultTrackSelector();
-            LoadControl loadControl = new DefaultLoadControl();
-            mExoPlayer = ExoPlayerFactory.newSimpleInstance(getContext(), trackSelector, loadControl);
-            mExoPlayerView.setPlayer(mExoPlayer);
-            /**prepare the media source**/
-            String userAgent = Util.getUserAgent(getContext(), "RecipesApp");
-            MediaSource mediaSource = new ExtractorMediaSource(mediaUri, new DefaultDataSourceFactory(getContext(), userAgent), new DefaultExtractorsFactory(), null, null);
-            mExoPlayer.prepare(mediaSource);
-            mExoPlayer.setPlayWhenReady(true);
-        }
+        mMediaPlayer = new MediaPlayer(getContext(), mExoPlayerView, mediaUri);
+        mMediaPlayer.createExoPlayer();
+        mMediaPlayer.prepareExoPlayer();
+
     }
 
-    private Uri prepareStepUri(String stepStringUri){
+    private Uri prepareStepUri(String stepStringUri) {
         return Uri.parse(stepStringUri).buildUpon().build();
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        releasePlayer();
-    }
-
-    private void releasePlayer() {
-        if(mExoPlayer != null) {
-            mExoPlayer.stop();
-            mExoPlayer.release();
-            mExoPlayer = null;
-        }
+        mMediaPlayer.releasePlayer();
     }
 
     @Override
     public void onClick(View view) {
         int id = view.getId();
-        if(mStepId == FIRST_STEP_ID){
+        if (mStepId == FIRST_STEP_ID) {
             mBtnPrevious.setClickable(false);
             mBtnNext.setClickable(true);
-        } else if (mStepId == mStepList.size()-1){
+        } else if (mStepId == mStepList.size() - 1) {
             mBtnPrevious.setClickable(true);
             mBtnNext.setClickable(false);
         }
-        releasePlayer();
-        switch (id){
+        switch (id) {
             case R.id.btn_previous_step:
                 Toast.makeText(getContext(), "Previous Step", Toast.LENGTH_SHORT).show();
-                mSwitchRecipeListener.onRecipeChange(mStepId-1);
+                mSwitchRecipeListener.onRecipeChange(mStepId - 1);
                 break;
             case R.id.btn_next_step:
                 Toast.makeText(getContext(), "Next Step", Toast.LENGTH_SHORT).show();
-                mSwitchRecipeListener.onRecipeChange(mStepId+1);
+                mSwitchRecipeListener.onRecipeChange(mStepId + 1);
                 break;
         }
+    }
+
+
+    /**ExoPlayer Event Listener methods**/
+    @Override
+    public void onTimelineChanged(Timeline timeline, Object manifest) {
+
+    }
+
+    @Override
+    public void onTracksChanged(TrackGroupArray trackGroups, TrackSelectionArray trackSelections) {
+
+    }
+
+    @Override
+    public void onLoadingChanged(boolean isLoading) {
+
+    }
+
+    @Override
+    public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
+
+    }
+
+    @Override
+    public void onPlayerError(ExoPlaybackException error) {
+
+    }
+
+    @Override
+    public void onPositionDiscontinuity() {
+
     }
 }

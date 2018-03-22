@@ -4,13 +4,9 @@ import android.content.Intent;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
-import android.widget.TextView;
-import android.widget.Toast;
 
-import com.android.project3.recipesapp.R;
+import com.karinatber.project3.recipesapp.R;
 import com.android.project3.recipesapp.data.Recipe;
-import com.android.project3.recipesapp.service.BaseService;
 
 import java.util.List;
 
