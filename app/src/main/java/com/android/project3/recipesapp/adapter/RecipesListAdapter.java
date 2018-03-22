@@ -8,7 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.karinatber.project3.recipesapp.R;
+import com.android.project3.recipesapp.R;
 import com.android.project3.recipesapp.data.Recipe;
 
 import java.util.List;

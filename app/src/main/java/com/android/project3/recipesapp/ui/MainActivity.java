@@ -5,7 +5,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
-import com.karinatber.project3.recipesapp.R;
+import com.android.project3.recipesapp.R;
 import com.android.project3.recipesapp.data.Recipe;
 
 import java.util.List;
