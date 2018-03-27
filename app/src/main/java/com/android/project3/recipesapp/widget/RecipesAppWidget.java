@@ -1,4 +1,4 @@
-package com.android.project3.recipesapp;
+package com.android.project3.recipesapp.widget;
 
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.widget.RemoteViews;
 
+import com.android.project3.recipesapp.R;
 import com.android.project3.recipesapp.ui.MainActivity;
 
 /**
