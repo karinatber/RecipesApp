@@ -1,6 +1,8 @@
 package com.android.project3.recipesapp.ui;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -21,6 +23,7 @@ public class RecipeDetailActivity extends AppCompatActivity implements DetailsFr
     Recipe mRecipeData;
     int mStatus;
     int mStepId;
+    SharedPreferences mSharedPreferences;
 
     final static String RECIPE_DETAILS_STATUS_KEY = "recipe-detail-status";
     final static String STEP_ID_KEY = "step-id";
@@ -33,6 +36,9 @@ public class RecipeDetailActivity extends AppCompatActivity implements DetailsFr
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recipe_detail);
+
+        mSharedPreferences = getSharedPreferences(getString(R.string.PREFERENCE_RECIPE_KEY), Context.MODE_PRIVATE);
+
         if(savedInstanceState != null){
             mStatus = savedInstanceState.getInt(RECIPE_DETAILS_STATUS_KEY);
             mStepId = savedInstanceState.getInt(STEP_ID_KEY);
@@ -45,6 +51,7 @@ public class RecipeDetailActivity extends AppCompatActivity implements DetailsFr
         }
         FragmentManager manager = getSupportFragmentManager();
         if (mStatus == DETAILS_STATUS) {
+            updateSharedPreference();
             /**creating ingredients list**/
             DetailsFragment ingrFragment = new DetailsFragment();
             ingrFragment.setRecipeData(mRecipeData, DetailsFragment.INGREDIENTS_LABEL);
@@ -115,6 +122,7 @@ public class RecipeDetailActivity extends AppCompatActivity implements DetailsFr
 
     private void showRecipeDetails(){
         mStatus = DETAILS_STATUS;
+        updateSharedPreference();
         FragmentManager manager = getSupportFragmentManager();
         /**creating ingredients list**/
         DetailsFragment ingrFragment = new DetailsFragment();
@@ -150,5 +158,11 @@ public class RecipeDetailActivity extends AppCompatActivity implements DetailsFr
         Log.v(TAG, "onRecipeChange was called");
         mStepId = position;
         showStepDetails(mRecipeData.getSteps().get(position));
+    }
+
+    private void updateSharedPreference(){
+        SharedPreferences.Editor editor = mSharedPreferences.edit();
+        editor.putInt(getString(R.string.PREFERENCE_RECIPE_KEY), mRecipeData.getId());
+        editor.apply();
     }
 }

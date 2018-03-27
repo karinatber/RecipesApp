@@ -1,13 +1,13 @@
 package com.android.project3.recipesapp.service;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.util.Log;
 
-import com.android.project3.recipesapp.BuildConfig;
+import com.android.project3.recipesapp.R;
 import com.android.project3.recipesapp.data.Recipe;
 import com.android.project3.recipesapp.rest.RestInterface;
 import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.Request;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -26,7 +26,11 @@ import retrofit.Retrofit;
 public class BaseService {
     static final String TAG = BaseService.class.getSimpleName();
     private static final String BASE_URL = "https://d17h27t6h515a5.cloudfront.net/";
+    public static final int ACTION_LOAD_ALL_RECIPES = 0;
+    public static final int ACTION_RECIPE_BY_ID = 1;
 
+
+    private List<Recipe> mRecipesList;
     OnApiServiceListener listener;
 
     public BaseService(OnApiServiceListener listener){
@@ -51,8 +55,20 @@ public class BaseService {
                 .build();
     }
 
-    public void executeService(){
+    public void executeService(Context context, int action){
         Log.i(TAG, "executeService was called");
+
+        switch(action){
+            case ACTION_LOAD_ALL_RECIPES:
+                loadAllRecipes();
+                break;
+            case ACTION_RECIPE_BY_ID:
+                loadRecipeByID(context);
+                break;
+        }
+    }
+
+    private void loadAllRecipes(){
         Retrofit retrofit = getBuilder();
 
         RestInterface service = retrofit.create(RestInterface.class);
@@ -64,6 +80,7 @@ public class BaseService {
             public void onResponse(Response<List<Recipe>> response) {
                 List<Recipe> recipes = response.body();
                 if(recipes != null) {
+                    mRecipesList = recipes;
                     listener.onExecFinished(recipes);
                     Log.i(TAG, "Loaded recipes with retrofit! First one: " + recipes.get(0).getName());
                 }
@@ -75,5 +92,18 @@ public class BaseService {
                 Log.e(TAG, "Something went wrong on callback");
             }
         });
+    }
+
+    private void loadRecipeByID(Context context){
+        SharedPreferences sp = context.getSharedPreferences(context.getString(R.string.PREFERENCE_RECIPE_KEY), Context.MODE_PRIVATE);
+        int recipeID = sp.getInt(context.getString(R.string.PREFERENCE_RECIPE_KEY), 99);
+        Recipe selectedRecipe;
+        for (Recipe recipe : mRecipesList){
+            if (recipe.getId() == recipeID){
+                selectedRecipe = recipe;
+                return;
+            }
+        }
+        Log.v(TAG, "Could not load recipe by ID "+recipeID);
     }
 }

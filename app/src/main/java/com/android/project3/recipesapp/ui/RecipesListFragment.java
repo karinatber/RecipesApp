@@ -69,7 +69,7 @@ public class RecipesListFragment extends Fragment implements RecipesListAdapter.
 
     public void loadRecipes(){
         BaseService service = new BaseService(this);
-        service.executeService();
+        service.executeService(getContext(), BaseService.ACTION_LOAD_ALL_RECIPES);
     }
 
     @Override
