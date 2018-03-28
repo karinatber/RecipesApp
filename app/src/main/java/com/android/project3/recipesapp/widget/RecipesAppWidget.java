@@ -1,4 +1,4 @@
-package com.android.project3.recipesapp;
+package com.android.project3.recipesapp.widget;
 
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
@@ -7,7 +7,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.widget.RemoteViews;
 
+import com.android.project3.recipesapp.R;
 import com.android.project3.recipesapp.ui.MainActivity;
+import com.android.project3.recipesapp.utils.RecipesAppUtils;
 
 /**
  * Implementation of App Widget functionality.
@@ -16,16 +18,15 @@ public class RecipesAppWidget extends AppWidgetProvider {
 
     static void updateAppWidget(Context context, AppWidgetManager appWidgetManager,
                                 int appWidgetId) {
-
         CharSequence widgetText = context.getString(R.string.appwidget_text);
         // Construct the RemoteViews object
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.recipes_app_widget);
-        views.setTextViewText(R.id.appwidget_text, widgetText);
+        views.setTextViewText(R.id.tv_appwidget_title, widgetText);
 
         Intent appIntent = new Intent(context, MainActivity.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, appIntent, 0);
 
-        views.setOnClickPendingIntent(R.id.appwidget_text, pendingIntent);
+        views.setOnClickPendingIntent(R.id.tv_appwidget_title, pendingIntent);
         // Instruct the widget manager to update the widget
         appWidgetManager.updateAppWidget(appWidgetId, views);
     }

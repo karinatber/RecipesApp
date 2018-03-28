@@ -32,6 +32,7 @@ public class BaseService {
 
     private List<Recipe> mRecipesList;
     OnApiServiceListener listener;
+    SharedPreferences mSharedPreferences;
 
     public BaseService(OnApiServiceListener listener){
         this.listener = listener;
@@ -95,15 +96,18 @@ public class BaseService {
     }
 
     private void loadRecipeByID(Context context){
-        SharedPreferences sp = context.getSharedPreferences(context.getString(R.string.PREFERENCE_RECIPE_KEY), Context.MODE_PRIVATE);
-        int recipeID = sp.getInt(context.getString(R.string.PREFERENCE_RECIPE_KEY), 99);
+        mSharedPreferences = context.getSharedPreferences(context.getString(R.string.PREFERENCE_RECIPE_KEY), Context.MODE_PRIVATE);
+        int recipeID = mSharedPreferences.getInt(context.getString(R.string.PREFERENCE_RECIPE_KEY), 99);
         Recipe selectedRecipe;
+        if(recipeID == 99) {
+            Log.v(TAG, "Could not load recipe by ID " + recipeID);
+            return;
+        }
         for (Recipe recipe : mRecipesList){
             if (recipe.getId() == recipeID){
                 selectedRecipe = recipe;
                 return;
             }
         }
-        Log.v(TAG, "Could not load recipe by ID "+recipeID);
     }
 }
