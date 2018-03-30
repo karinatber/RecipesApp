@@ -37,7 +37,7 @@ public class RecipeDetailActivity extends AppCompatActivity implements DetailsFr
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recipe_detail);
 
-        mSharedPreferences = getSharedPreferences(getString(R.string.PREFERENCE_RECIPE_KEY), Context.MODE_PRIVATE);
+        mSharedPreferences = getSharedPreferences(getString(R.string.PREFERENCE_RECIPE_ID_KEY), Context.MODE_PRIVATE);
 
         if(savedInstanceState != null){
             mStatus = savedInstanceState.getInt(RECIPE_DETAILS_STATUS_KEY);
@@ -162,7 +162,7 @@ public class RecipeDetailActivity extends AppCompatActivity implements DetailsFr
 
     private void updateSharedPreference(){
         SharedPreferences.Editor editor = mSharedPreferences.edit();
-        editor.putInt(getString(R.string.PREFERENCE_RECIPE_KEY), mRecipeData.getId());
+        editor.putInt(getString(R.string.PREFERENCE_RECIPE_ID_KEY), mRecipeData.getId());
         editor.apply();
     }
 }

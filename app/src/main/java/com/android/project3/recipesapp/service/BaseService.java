@@ -7,6 +7,7 @@ import android.util.Log;
 import com.android.project3.recipesapp.R;
 import com.android.project3.recipesapp.data.Recipe;
 import com.android.project3.recipesapp.rest.RestInterface;
+import com.android.project3.recipesapp.utils.RecipesAppUtils;
 import com.squareup.okhttp.OkHttpClient;
 
 import java.util.List;
@@ -61,7 +62,7 @@ public class BaseService {
 
         switch(action){
             case ACTION_LOAD_ALL_RECIPES:
-                loadAllRecipes();
+                loadAllRecipes(context);
                 break;
             case ACTION_RECIPE_BY_ID:
                 loadRecipeByID(context);
@@ -69,11 +70,11 @@ public class BaseService {
         }
     }
 
-    private void loadAllRecipes(){
+    private void loadAllRecipes(Context context){
+        final RecipesAppUtils utils = new RecipesAppUtils(context);
+
         Retrofit retrofit = getBuilder();
-
         RestInterface service = retrofit.create(RestInterface.class);
-
         Call<List<Recipe>> call = service.getRecipes();
 
         call.enqueue(new Callback<List<Recipe>>() {
@@ -83,6 +84,7 @@ public class BaseService {
                 if(recipes != null) {
                     mRecipesList = recipes;
                     listener.onExecFinished(recipes);
+                    utils.updatePreferenceRecipesList(recipes);
                     Log.i(TAG, "Loaded recipes with retrofit! First one: " + recipes.get(0).getName());
                 }
             }
@@ -96,11 +98,11 @@ public class BaseService {
     }
 
     private void loadRecipeByID(Context context){
-        mSharedPreferences = context.getSharedPreferences(context.getString(R.string.PREFERENCE_RECIPE_KEY), Context.MODE_PRIVATE);
-        int recipeID = mSharedPreferences.getInt(context.getString(R.string.PREFERENCE_RECIPE_KEY), 99);
+        mSharedPreferences = context.getSharedPreferences(context.getString(R.string.PREFERENCE_RECIPE_ID_KEY), Context.MODE_PRIVATE);
+        int recipeID = mSharedPreferences.getInt(context.getString(R.string.PREFERENCE_RECIPE_ID_KEY), 99);
         Recipe selectedRecipe;
         if(recipeID == 99) {
-            Log.v(TAG, "Could not load recipe by ID " + recipeID);
+            Log.i(TAG, "Could not load recipe by ID " + recipeID);
             return;
         }
         for (Recipe recipe : mRecipesList){
