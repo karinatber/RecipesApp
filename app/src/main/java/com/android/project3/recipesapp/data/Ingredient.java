@@ -107,9 +107,9 @@ public class Ingredient implements Parcelable
     @Override
     public String toString() {
         return "{" +
-                "quantity=" + quantity +
-                ", measure='" + measure + '\'' +
-                ", ingredient='" + ingredient + '\'' +
-                '}';
+                "\"quantity\":" + quantity +
+                ", \"measure\":\"" + measure + '\"' +
+                ", \"ingredient\":\"" + ingredient + '\"' +
+                "}";
     }
 }

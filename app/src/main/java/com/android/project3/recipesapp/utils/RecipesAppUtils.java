@@ -17,6 +17,9 @@ import java.util.List;
 
 public class RecipesAppUtils implements BaseService.OnApiServiceListener{
     public static final String TAG = RecipesAppUtils.class.getSimpleName();
+
+    public static final int INVALID_RECIPE_ID = 99;
+
     private List<Recipe> mRecipeList;
     private Context mContext;
     private SharedPreferences mPreferences;
@@ -27,6 +30,8 @@ public class RecipesAppUtils implements BaseService.OnApiServiceListener{
     }
 
     public List<Recipe> loadAllRecipes(){
+        BaseService service = new BaseService(this);
+        service.executeService(mContext, BaseService.ACTION_LOAD_ALL_RECIPES);
         return mRecipeList;
     }
 
@@ -42,7 +47,7 @@ public class RecipesAppUtils implements BaseService.OnApiServiceListener{
                 }
             }
         } else{
-            loadRecipesFromJson();
+            return loadRecipeFromJson();
         }
         return null;
     }
@@ -52,38 +57,39 @@ public class RecipesAppUtils implements BaseService.OnApiServiceListener{
         mRecipeList = recipes;
     }
 
-    public List<Recipe> loadRecipesFromJson(){
-        String json = recipesToJson();
-        return null;
-    }
-
-    public String recipesToJson(){
-        String strRecipes = getAllRecipesFromPreferences();
-        Gson gson = new Gson();
-        try {
-            String jsonRecipes = gson.toJson(strRecipes);
-            Log.i(TAG, "recipesToJson was called, json generated: " + jsonRecipes);
-            return jsonRecipes;
-        } catch(Exception e){
-            Log.i(TAG, "Gson could not generate json from recipes String");
+    public Recipe loadRecipeFromJson(){
+        String json = getRecipeStrFromPreferences();
+        Log.i(TAG, "Loaded json from preferences: "+json);
+        if (json!=null && !json.isEmpty()) {
+            Gson gson = new Gson();
+            Recipe recipe = gson.fromJson(json, Recipe.class);
+            if (recipe == null){
+                Log.i(TAG, "Recipe loaded from json is null!!");
+            }
+            return recipe;
         }
         return null;
     }
 
     //update stored values of all recipes in SharedPreferences
-    public void updatePreferenceRecipesList(List<Recipe> recipeList){
-        String allRecipes = recipeList.toString();
+    public void updatePreferenceRecipe(Recipe recipe, int recipeId){
+        int previousId = mPreferences.getInt(mContext.getString(R.string.PREFERENCE_RECIPE_ID_KEY), INVALID_RECIPE_ID);
 
         SharedPreferences.Editor editor = mPreferences.edit();
+        if(previousId != INVALID_RECIPE_ID){
+            editor.remove(mContext.getString(R.string.PREFERENCE_RECIPE_ID_KEY)+previousId);//clean previous recipe stored in Preferences
+        }
+        editor.putInt(mContext.getString(R.string.PREFERENCE_RECIPE_ID_KEY), recipeId);
         editor.putString(
-                mContext.getString(R.string.PREFERENCE_RECIPES_LIST_KEY),
-                allRecipes
+                mContext.getString(R.string.PREFERENCE_RECIPE_ID_KEY)+recipeId,
+                recipe.toString()
         );
         editor.apply();
-        Log.i(TAG, "Stored recipes in preferences, value: "+allRecipes);
+        Log.i(TAG, "Stored recipe id="+recipeId+" in preferences, value: "+recipe.toString());
     }
 
-    private String getAllRecipesFromPreferences(){
-        return mPreferences.getString(mContext.getString(R.string.PREFERENCE_RECIPES_LIST_KEY), "");
+    private String getRecipeStrFromPreferences(){
+        int recipeId = mPreferences.getInt(mContext.getString(R.string.PREFERENCE_RECIPE_ID_KEY), INVALID_RECIPE_ID);
+        return mPreferences.getString(mContext.getString(R.string.PREFERENCE_RECIPE_ID_KEY)+recipeId, "");
     }
 }

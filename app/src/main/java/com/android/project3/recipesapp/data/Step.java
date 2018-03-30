@@ -152,12 +152,15 @@ public class Step implements Parcelable
 
     @Override
     public String toString() {
-        return "Step{" +
-                "id=" + id +
-                ", shortDescription='" + shortDescription + '\'' +
-                ", description='" + description + '\'' +
-                ", videoURL='" + videoURL + '\'' +
-                ", thumbnailURL='" + thumbnailURL + '\'' +
-                '}';
+        if(description.contains("\"")){
+            description.replace("\"", "");
+        }
+        return "{" +
+                "\"id\":" + id +
+                ", \"shortDescription\":\"" + shortDescription + '\"' +
+                ", \"description\":\"" + description + '\"' +
+                ", \"videoURL\":\"" + videoURL + '\"' +
+                ", \"thumbnailURL\":\"" + thumbnailURL + '\"' +
+                "}";
     }
 }

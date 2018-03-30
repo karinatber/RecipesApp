@@ -84,7 +84,6 @@ public class BaseService {
                 if(recipes != null) {
                     mRecipesList = recipes;
                     listener.onExecFinished(recipes);
-                    utils.updatePreferenceRecipesList(recipes);
                     Log.i(TAG, "Loaded recipes with retrofit! First one: " + recipes.get(0).getName());
                 }
             }
