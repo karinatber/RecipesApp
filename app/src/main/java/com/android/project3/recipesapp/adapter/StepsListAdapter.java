@@ -2,6 +2,7 @@ package com.android.project3.recipesapp.adapter;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -45,6 +46,7 @@ public class StepsListAdapter extends RecyclerView.Adapter<StepsListAdapter.Step
             String shortDescr = step.getShortDescription();
 
             holder.mShortDescr.setText(shortDescr);
+            //Log.i(TAG, "description step#"+step.getId()+": "+step.getDescription());
         }
     }
 

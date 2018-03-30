@@ -31,7 +31,7 @@ public class RecipesAppWidget extends AppWidgetProvider {
         Intent intent = new Intent(context, RecipesAppWidgetService.class);
         intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
 
-        if (recipe!=null){
+        if (recipe != null){
             views.setTextViewText(R.id.tv_appwidget_title, recipe.getName());
             views.setRemoteAdapter(R.id.lv_ingredients_list_widget, intent);
         } else {
