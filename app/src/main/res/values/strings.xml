@@ -6,5 +6,7 @@
     <string name="next">Next</string>
     <string name="appwidget_text">EXAMPLE</string>
     <string name="add_widget">Add widget</string>
-    <string name="PREFERENCE_RECIPE_KEY">com.android.project3.recipesapp.PREFERENCE_RECIPE</string>
+    <string name="PREFERENCE_RECIPE_ID_KEY">com.android.project3.recipesapp.PREFERENCE_RECIPE</string>
+    <string name="PREFERENCE_RECIPES_LIST_KEY">com.android.project3.recipesapp.PREFERENCE_RECIPES_LIST</string>
+    <string name="error_message">Something went wrong. Please try again.</string>
 </resources>
