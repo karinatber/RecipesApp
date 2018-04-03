@@ -13,15 +13,27 @@
         android:layout_centerVertical="true"
         android:layout_margin="8dp"
         android:background="#09C"
-        android:contentDescription="@string/appwidget_text"
         tools:text="@string/appwidget_text"
         android:textColor="#ffffff"
-        android:textSize="24sp"
+        android:textSize="16sp"
         android:textStyle="bold|italic" />
-    <ListView
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/lv_ingredients_list_widget"
-        android:layout_below="@id/tv_appwidget_title"/>
+        android:layout_below="@id/tv_appwidget_title">
+        <ListView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/lv_ingredients_list_widget"
+            android:background="#09C"
+            tools:listitem="@layout/ingredients_widget_list_item"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/tv_widget_empty_list"
+            android:textColor="#ffffff"
+            android:text="@string/error_message"
+            android:visibility="invisible"/>
+    </FrameLayout>
 
 </RelativeLayout>

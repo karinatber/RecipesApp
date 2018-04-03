@@ -177,13 +177,13 @@ public class Recipe implements Parcelable
 
     @Override
     public String toString() {
-        return "{\"Recipe\":[{" +
+        return "{" +
                 "\"id\":" + id +
                 ", \"name\":\"" + name + '\"' +
                 ", \"ingredients\":" + ingredients +
                 ", \"steps\":" + steps +
                 ", \"servings\":" + servings +
                 ", \"image\":\"" + image + '\"' +
-                "}]}";
+                "}";
     }
 }

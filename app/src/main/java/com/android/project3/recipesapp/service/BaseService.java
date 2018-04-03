@@ -83,6 +83,7 @@ public class BaseService {
                 List<Recipe> recipes = response.body();
                 if(recipes != null) {
                     mRecipesList = recipes;
+                    mRecipesList = utils.validateStringsInRecipes(mRecipesList);
                     listener.onExecFinished(recipes);
                     Log.i(TAG, "Loaded recipes with retrofit! First one: " + recipes.get(0).getName());
                 }
