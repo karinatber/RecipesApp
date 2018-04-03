@@ -9,4 +9,5 @@
     <string name="PREFERENCE_RECIPE_ID_KEY">com.android.project3.recipesapp.PREFERENCE_RECIPE</string>
     <string name="PREFERENCE_RECIPES_LIST_KEY">com.android.project3.recipesapp.PREFERENCE_RECIPES_LIST</string>
     <string name="error_message">Something went wrong. Please try again.</string>
+    <string name="start_app_to_explore">Let\'s start exploring the recipes world.</string>
 </resources>

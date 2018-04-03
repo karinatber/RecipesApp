@@ -6,6 +6,7 @@ import android.util.Log;
 
 import com.android.project3.recipesapp.R;
 import com.android.project3.recipesapp.data.Recipe;
+import com.android.project3.recipesapp.data.Step;
 import com.android.project3.recipesapp.service.BaseService;
 import com.google.gson.Gson;
 
@@ -38,7 +39,7 @@ public class RecipesAppUtils implements BaseService.OnApiServiceListener{
     public Recipe loadRecipeByID(){
         String preferenceKey = mContext.getString(R.string.PREFERENCE_RECIPE_ID_KEY);
         SharedPreferences sp = mContext.getSharedPreferences(preferenceKey, Context.MODE_PRIVATE);
-        int recipeID = sp.getInt(preferenceKey, 99);
+        int recipeID = sp.getInt(preferenceKey, INVALID_RECIPE_ID);
 
         if(mRecipeList != null){
             for (Recipe recipe : mRecipeList){
@@ -60,12 +61,13 @@ public class RecipesAppUtils implements BaseService.OnApiServiceListener{
     public Recipe loadRecipeFromJson(){
         String json = getRecipeStrFromPreferences();
         Log.i(TAG, "Loaded json from preferences: "+json);
-        if (json!=null && !json.isEmpty()) {
+        if (json!=null || !json.isEmpty()) {
             Gson gson = new Gson();
             Recipe recipe = gson.fromJson(json, Recipe.class);
             if (recipe == null){
                 Log.i(TAG, "Recipe loaded from json is null!!");
             }
+            Log.i(TAG, "loadRecipeFromJson: loaded recipe "+recipe.getName());
             return recipe;
         }
         return null;
@@ -91,5 +93,16 @@ public class RecipesAppUtils implements BaseService.OnApiServiceListener{
     private String getRecipeStrFromPreferences(){
         int recipeId = mPreferences.getInt(mContext.getString(R.string.PREFERENCE_RECIPE_ID_KEY), INVALID_RECIPE_ID);
         return mPreferences.getString(mContext.getString(R.string.PREFERENCE_RECIPE_ID_KEY)+recipeId, "");
+    }
+
+    public List<Recipe> validateStringsInRecipes(List<Recipe> recipeList){
+        for (Recipe recipe : recipeList){
+            for(Step step : recipe.getSteps()){
+                if(step.getDescription().contains("\"")){
+                    step.setDescription(step.getDescription().replace("\"", ""));
+                }
+            }
+        }
+        return recipeList;
     }
 }

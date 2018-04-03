@@ -4,6 +4,7 @@ import android.appwidget.AppWidgetManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.IBinder;
+import android.util.Log;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
 
@@ -19,94 +20,103 @@ import java.util.List;
  */
 
 public class RecipesAppWidgetService extends RemoteViewsService {
+    private static final String TAG = RecipesAppWidgetService.class.getSimpleName();
+
     public RecipesAppWidgetService() {
         super();
     }
 
     @Override
     public IBinder onBind(Intent intent) {
-
         return super.onBind(intent);
     }
 
     @Override
     public RecipeAppWidgetFactory onGetViewFactory(Intent intent) {
+        Log.i(TAG, "onGetViewFactory was called");
+        return new RecipeAppWidgetFactory(this.getApplicationContext(), intent);
+    }
+}
+
+class RecipeAppWidgetFactory  implements RemoteViewsService.RemoteViewsFactory {
+    private static final String TAG = RecipeAppWidgetFactory.class.getSimpleName();
+    private Context mContext;
+    private List<Recipe> mRecipeList;
+    private Recipe mRecipe;
+    private RecipesAppUtils mUtils;
+    private int mAppWidgetId;
+
+    public RecipeAppWidgetFactory(Context context, Intent intent) {
+        mContext = context;
+        mAppWidgetId = intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID);
+        mUtils = new RecipesAppUtils(context);
+        mRecipeList = mUtils.loadAllRecipes();
+        mRecipe = mUtils.loadRecipeByID();
+    }
+
+    @Override
+    public void onCreate() {
+        Log.i(TAG, "onCreate was called");
+        mRecipeList = mUtils.loadAllRecipes();
+        mRecipe = mUtils.loadRecipeByID();
+    }
+
+    @Override
+    public void onDataSetChanged() {
+        RemoteViews rv = new RemoteViews(mContext.getPackageName(), R.layout.ingredients_widget_list_item);
+
+        AppWidgetManager.getInstance(mContext).updateAppWidget(mAppWidgetId, rv);
+    }
+
+    @Override
+    public void onDestroy() {
+
+    }
+
+    @Override
+    public int getCount() {
+        if (mRecipe == null) return 0;
+        return mRecipe.getIngredients().size();
+    }
+
+    @Override
+    public RemoteViews getViewAt(int i) {
+        Log.i(TAG,"getViewAt was called at "+i);
+        if(mRecipe == null) {
+            Log.i(TAG, "getViewAt: mRecipe is null");
+            return null;
+        }
+        Ingredient ingredient = mRecipe.getIngredients().get(i);
+        RemoteViews remoteViews = new RemoteViews(mContext.getPackageName(), R.layout.ingredients_widget_list_item);
+
+        String name = ingredient.getIngredient();
+        String quantity = String.valueOf(ingredient.getQuantity());
+        String unit = ingredient.getMeasure();
+
+        remoteViews.setTextViewText(R.id.tv_name_ingr_widget, name);
+        remoteViews.setTextViewText(R.id.tv_quantity_ingr_widget, quantity);
+        remoteViews.setTextViewText(R.id.tv_unit_ingr_widget, unit);
+
+        return remoteViews;
+    }
+
+    @Override
+    public RemoteViews getLoadingView() {
         return null;
     }
 
-    class RecipeAppWidgetFactory implements RemoteViewsFactory{
-        private Context mContext;
-        private List<Recipe> mRecipeList;
-        private Recipe mRecipe;
-        private RecipesAppUtils mUtils;
+    @Override
+    public int getViewTypeCount() {
+        return 1;
+    }
 
-        RecipeAppWidgetFactory(Context context, Intent intent){
-            mContext = context;
-            int mWidgetID = intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID);
-            mUtils = new RecipesAppUtils(context);
-            mRecipeList = mUtils.loadAllRecipes();
-            mRecipe = mUtils.loadRecipeByID();
-        }
+    @Override
+    public long getItemId(int i) {
+        return i;
+    }
 
-        @Override
-        public void onCreate() {
-
-        }
-
-        @Override
-        public void onDataSetChanged() {
-            mRecipeList = mUtils.loadAllRecipes();
-            mRecipe = mUtils.loadRecipeByID();
-        }
-
-        @Override
-        public void onDestroy() {
-
-        }
-
-        @Override
-        public int getCount() {
-            if (mRecipe == null) return 0;
-            return mRecipe.getIngredients().size();
-        }
-
-        @Override
-        public RemoteViews getViewAt(int i) {
-            if(mRecipe == null) {
-                return null;
-            }
-            Ingredient ingredient = mRecipe.getIngredients().get(i);
-            RemoteViews remoteViews = new RemoteViews(mContext.getPackageName(), R.layout.ingredients_widget_list_item);
-
-            String name = ingredient.getIngredient();
-            String quantity = String.valueOf(ingredient.getQuantity());
-            String unit = ingredient.getMeasure();
-
-            remoteViews.setTextViewText(R.id.tv_name_ingr_widget, name);
-            remoteViews.setTextViewText(R.id.tv_quantity_ingr_widget, quantity);
-            remoteViews.setTextViewText(R.id.tv_unit_ingr_widget, unit);
-
-            return remoteViews;
-        }
-
-        @Override
-        public RemoteViews getLoadingView() {
-            return null;
-        }
-
-        @Override
-        public int getViewTypeCount() {
-            return 0;
-        }
-
-        @Override
-        public long getItemId(int i) {
-            return i;
-        }
-
-        @Override
-        public boolean hasStableIds() {
-            return true;
-        }
+    @Override
+    public boolean hasStableIds() {
+        return true;
     }
 }
