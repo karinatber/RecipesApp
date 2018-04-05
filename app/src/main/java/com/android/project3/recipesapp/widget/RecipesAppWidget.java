@@ -10,7 +10,9 @@ import android.widget.RemoteViews;
 
 import com.android.project3.recipesapp.R;
 import com.android.project3.recipesapp.data.Recipe;
+import com.android.project3.recipesapp.ui.DetailsFragment;
 import com.android.project3.recipesapp.ui.MainActivity;
+import com.android.project3.recipesapp.ui.RecipeDetailActivity;
 import com.android.project3.recipesapp.utils.RecipesAppUtils;
 
 /**
@@ -27,24 +29,33 @@ public class RecipesAppWidget extends AppWidgetProvider {
 
         //load recipe data
         RecipesAppUtils utils = new RecipesAppUtils(context);
-        Recipe recipe = utils.loadRecipeByID();
+        Recipe recipe = utils.loadRecipeByID(appWidgetId);
 
         //set up intent for ingredients list
         Intent intent = new Intent(context, RecipesAppWidgetService.class);
         intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
 
+        views.setRemoteAdapter(R.id.lv_ingredients_list_widget, intent);
         if (recipe != null){
             Log.i(TAG, "updateAppWidget: recipe name is "+recipe.getName()+" and ID is "+recipe.getId());
             views.setTextViewText(R.id.tv_appwidget_title, recipe.getName());
-            views.setRemoteAdapter(R.id.lv_ingredients_list_widget, intent);
             views.setEmptyView(R.id.lv_ingredients_list_widget, R.id.tv_widget_empty_list);
+
+            Intent openRecipe = new Intent(context, RecipeDetailActivity.class);
+            openRecipe.putExtra(DetailsFragment.EXTRA_RECIPE, recipe);
+            openRecipe.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
+            PendingIntent pendingIntentOpenRecipe = PendingIntent.getActivity(context, 0, openRecipe, PendingIntent.FLAG_UPDATE_CURRENT);
+
+            views.setOnClickPendingIntent(R.id.tv_appwidget_title, pendingIntentOpenRecipe);
+            views.setOnClickPendingIntent(R.id.lv_ingredients_list_widget, pendingIntentOpenRecipe);
         } else {
             views.setTextViewText(R.id.tv_appwidget_title, context.getString(R.string.start_app_to_explore));
 
             Intent startMainIntent = new Intent(context, MainActivity.class);
-            PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, startMainIntent, 0);
+            startMainIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
+            PendingIntent pendingIntentStartMain = PendingIntent.getActivity(context, 0, startMainIntent, 0);
 
-            views.setOnClickPendingIntent(R.id.tv_appwidget_title, pendingIntent);
+            views.setOnClickPendingIntent(R.id.tv_appwidget_title, pendingIntentStartMain);
         }
         appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetId, R.id.tv_appwidget_title);
         // Instruct the widget manager to update the widget

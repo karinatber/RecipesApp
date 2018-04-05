@@ -1,5 +1,6 @@
 package com.android.project3.recipesapp.ui;
 
+import android.appwidget.AppWidgetManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -26,6 +27,7 @@ public class RecipeDetailActivity extends AppCompatActivity implements DetailsFr
     int mStepId;
     SharedPreferences mSharedPreferences;
     RecipesAppUtils mUtils;
+    int mAppWidgetId;
 
     final static String RECIPE_DETAILS_STATUS_KEY = "recipe-detail-status";
     final static String STEP_ID_KEY = "step-id";
@@ -49,12 +51,13 @@ public class RecipeDetailActivity extends AppCompatActivity implements DetailsFr
         } else {
             Intent originIntent = getIntent();
             mRecipeData = originIntent.getParcelableExtra(DetailsFragment.EXTRA_RECIPE);
+            mAppWidgetId = originIntent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID);
             setTitle(mRecipeData.getName());
             mStatus = DETAILS_STATUS;
         }
         FragmentManager manager = getSupportFragmentManager();
         if (mStatus == DETAILS_STATUS) {
-            mUtils.updatePreferenceRecipe(mRecipeData, mRecipeData.getId());
+            mUtils.updatePreferenceRecipe(mRecipeData, mRecipeData.getId(), mAppWidgetId, this);
             /**creating ingredients list**/
             DetailsFragment ingrFragment = new DetailsFragment();
             ingrFragment.setRecipeData(mRecipeData, DetailsFragment.INGREDIENTS_LABEL);
@@ -125,7 +128,7 @@ public class RecipeDetailActivity extends AppCompatActivity implements DetailsFr
 
     private void showRecipeDetails(){
         mStatus = DETAILS_STATUS;
-        mUtils.updatePreferenceRecipe(mRecipeData, mRecipeData.getId());
+        mUtils.updatePreferenceRecipe(mRecipeData, mRecipeData.getId(), mAppWidgetId, this);
         FragmentManager manager = getSupportFragmentManager();
         /**creating ingredients list**/
         DetailsFragment ingrFragment = new DetailsFragment();
