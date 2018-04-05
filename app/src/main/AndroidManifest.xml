@@ -31,7 +31,7 @@
                 android:resource="@xml/recipes_app_widget_info" />
         </receiver>
         <service android:name=".widget.RecipesAppWidgetService"
-            android:permission="android.permission.BIND_REMOTEVIEWS"/>
+            android:permission="android.permission.BIND_REMOTEVIEWS" />
     </application>
 
 </manifest>

@@ -1,5 +1,6 @@
 package com.android.project3.recipesapp.utils;
 
+import android.appwidget.AppWidgetManager;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
@@ -20,6 +21,7 @@ public class RecipesAppUtils implements BaseService.OnApiServiceListener{
     public static final String TAG = RecipesAppUtils.class.getSimpleName();
 
     public static final int INVALID_RECIPE_ID = 99;
+    public static final String EXTRA_APPWIDGET_ID = "extra-appwidget-id";
 
     private List<Recipe> mRecipeList;
     private Context mContext;
@@ -36,7 +38,7 @@ public class RecipesAppUtils implements BaseService.OnApiServiceListener{
         return mRecipeList;
     }
 
-    public Recipe loadRecipeByID(){
+    public Recipe loadRecipeByID(int appWidgetId){
         String preferenceKey = mContext.getString(R.string.PREFERENCE_RECIPE_ID_KEY);
         SharedPreferences sp = mContext.getSharedPreferences(preferenceKey, Context.MODE_PRIVATE);
         int recipeID = sp.getInt(preferenceKey, INVALID_RECIPE_ID);
@@ -48,7 +50,7 @@ public class RecipesAppUtils implements BaseService.OnApiServiceListener{
                 }
             }
         } else{
-            return loadRecipeFromJson();
+            return loadRecipeFromJson(appWidgetId);
         }
         return null;
     }
@@ -58,14 +60,15 @@ public class RecipesAppUtils implements BaseService.OnApiServiceListener{
         mRecipeList = recipes;
     }
 
-    public Recipe loadRecipeFromJson(){
-        String json = getRecipeStrFromPreferences();
+    public Recipe loadRecipeFromJson(int appWidgetId){
+        String json = getRecipeStrFromPreferences(appWidgetId);
         Log.i(TAG, "Loaded json from preferences: "+json);
         if (json!=null || !json.isEmpty()) {
             Gson gson = new Gson();
             Recipe recipe = gson.fromJson(json, Recipe.class);
             if (recipe == null){
                 Log.i(TAG, "Recipe loaded from json is null!!");
+                return null;
             }
             Log.i(TAG, "loadRecipeFromJson: loaded recipe "+recipe.getName());
             return recipe;
@@ -74,25 +77,26 @@ public class RecipesAppUtils implements BaseService.OnApiServiceListener{
     }
 
     //update stored values of all recipes in SharedPreferences
-    public void updatePreferenceRecipe(Recipe recipe, int recipeId){
+    public void updatePreferenceRecipe(Recipe recipe, int recipeId, int appWidgetId, Context context){
         int previousId = mPreferences.getInt(mContext.getString(R.string.PREFERENCE_RECIPE_ID_KEY), INVALID_RECIPE_ID);
 
         SharedPreferences.Editor editor = mPreferences.edit();
         if(previousId != INVALID_RECIPE_ID){
-            editor.remove(mContext.getString(R.string.PREFERENCE_RECIPE_ID_KEY)+previousId);//clean previous recipe stored in Preferences
+            editor.remove(mContext.getString(R.string.PREFERENCE_RECIPE_ID_KEY)+appWidgetId);//clean previous recipe stored in Preferences
         }
         editor.putInt(mContext.getString(R.string.PREFERENCE_RECIPE_ID_KEY), recipeId);
         editor.putString(
-                mContext.getString(R.string.PREFERENCE_RECIPE_ID_KEY)+recipeId,
+                mContext.getString(R.string.PREFERENCE_RECIPE_ID_KEY)+appWidgetId,
                 recipe.toString()
         );
         editor.apply();
+        AppWidgetManager.getInstance(context).notifyAppWidgetViewDataChanged(appWidgetId, R.id.lv_ingredients_list_widget);
         Log.i(TAG, "Stored recipe id="+recipeId+" in preferences, value: "+recipe.toString());
     }
 
-    private String getRecipeStrFromPreferences(){
+    private String getRecipeStrFromPreferences(int appWidgetId){
         int recipeId = mPreferences.getInt(mContext.getString(R.string.PREFERENCE_RECIPE_ID_KEY), INVALID_RECIPE_ID);
-        return mPreferences.getString(mContext.getString(R.string.PREFERENCE_RECIPE_ID_KEY)+recipeId, "");
+        return mPreferences.getString(mContext.getString(R.string.PREFERENCE_RECIPE_ID_KEY)+appWidgetId, "");
     }
 
     public List<Recipe> validateStringsInRecipes(List<Recipe> recipeList){

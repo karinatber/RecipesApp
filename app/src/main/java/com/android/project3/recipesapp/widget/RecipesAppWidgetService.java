@@ -51,19 +51,19 @@ class RecipeAppWidgetFactory  implements RemoteViewsService.RemoteViewsFactory {
         mAppWidgetId = intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID);
         mUtils = new RecipesAppUtils(context);
         mRecipeList = mUtils.loadAllRecipes();
-        mRecipe = mUtils.loadRecipeByID();
+        mRecipe = mUtils.loadRecipeByID(mAppWidgetId);
     }
 
     @Override
     public void onCreate() {
         Log.i(TAG, "onCreate was called");
         mRecipeList = mUtils.loadAllRecipes();
-        mRecipe = mUtils.loadRecipeByID();
+        mRecipe = mUtils.loadRecipeByID(mAppWidgetId);
     }
 
     @Override
     public void onDataSetChanged() {
-        RemoteViews rv = new RemoteViews(mContext.getPackageName(), R.layout.ingredients_widget_list_item);
+        RemoteViews rv = new RemoteViews(mContext.getPackageName(), R.layout.recipes_app_widget);
 
         AppWidgetManager.getInstance(mContext).updateAppWidget(mAppWidgetId, rv);
     }
