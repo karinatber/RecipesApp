@@ -90,7 +90,8 @@ public class RecipesAppUtils implements BaseService.OnApiServiceListener{
                 recipe.toString()
         );
         editor.apply();
-        AppWidgetManager.getInstance(context).notifyAppWidgetViewDataChanged(appWidgetId, R.id.lv_ingredients_list_widget);
+        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
+        appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetId, R.id.lv_ingredients_list_widget);
         Log.i(TAG, "Stored recipe id="+recipeId+" in preferences, value: "+recipe.toString());
     }
 
